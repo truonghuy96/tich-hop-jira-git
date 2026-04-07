@@ -1,0 +1,38 @@
+package JAVAGROUP.prjApp.controller;
+
+import JAVAGROUP.prjApp.service.SyncService;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
+import java.util.UUID;
+
+@RestController
+@RequestMapping("/api/sync")
+@CrossOrigin(origins = "*")
+public class SyncController {
+
+    private final SyncService syncService;
+
+    public SyncController(SyncService syncService) {
+        this.syncService = syncService;
+    }
+
+    @PostMapping("/{idNhom}/jira")
+    public ResponseEntity<Map<String, String>> dongBoJira(@PathVariable UUID idNhom) {
+        syncService.dongBoJira(idNhom);
+        return ResponseEntity.ok(Map.of("message", "Đồng bộ Jira thành công"));
+    }
+
+    @PostMapping("/{idNhom}/github")
+    public ResponseEntity<Map<String, String>> dongBoGithub(@PathVariable UUID idNhom) {
+        syncService.dongBoGithub(idNhom);
+        return ResponseEntity.ok(Map.of("message", "Đồng bộ GitHub thành công"));
+    }
+
+    @PostMapping("/mapping")
+    public ResponseEntity<Map<String, String>> mappingTaskCommit() {
+        syncService.mappingTaskCommit();
+        return ResponseEntity.ok(Map.of("message", "Mapping commit–task thành công"));
+    }
+}

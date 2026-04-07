@@ -1,0 +1,41 @@
+package JAVAGROUP.prjApp.controller;
+
+import JAVAGROUP.prjApp.dto.UserDTO;
+import JAVAGROUP.prjApp.service.UserService;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
+import java.util.UUID;
+
+@RestController
+@RequestMapping("/api/users")
+@CrossOrigin(origins = "*")
+public class UserController {
+
+    private final UserService userService;
+
+    public UserController(UserService userService) {
+        this.userService = userService;
+    }
+
+    @PostMapping
+    public ResponseEntity<Map<String, String>> taoTaiKhoan(@RequestBody UserDTO dto) {
+        userService.taoTaiKhoan(dto);
+        return ResponseEntity.ok(Map.of("message", "Tạo tài khoản thành công"));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Map<String, String>> xoaTaiKhoan(@PathVariable UUID id) {
+        userService.xoaTaiKhoan(id);
+        return ResponseEntity.ok(Map.of("message", "Xoá tài khoản thành công"));
+    }
+
+    @PatchMapping("/{id}/role")
+    public ResponseEntity<Map<String, String>> phanQuyen(
+            @PathVariable UUID id,
+            @RequestBody Map<String, String> body) {
+        userService.phanQuyen(id, body.get("role"));
+        return ResponseEntity.ok(Map.of("message", "Cập nhật quyền thành công"));
+    }
+}
