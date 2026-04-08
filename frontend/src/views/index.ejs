@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <% const _roleLabel = typeof roleLabel !== "undefined" ? roleLabel : "Người dùng"; %>
+  <% const _roleKey = typeof roleKey !== "undefined" ? roleKey : "THANH_VIEN"; %>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Trang <%= _roleLabel %></title>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <header>
+    <h1>Bảng điều khiển - <%= _roleLabel %></h1>
+    <p>Trang thao tác riêng theo chức vụ đăng nhập</p>
+  </header>
+
+  <main class="layout">
+    <aside class="sidebar card">
+      <h2>Thông tin phiên</h2>
+      <label for="backendUrl">Backend URL</label>
+      <input id="backendUrl" value="<%= backendUrl %>" />
+      <label for="token">Mã token</label>
+      <input id="token" placeholder="Bearer token" />
+      <label>Vai trò hiện tại</label>
+      <input value="<%= _roleLabel %>" disabled />
+      <div class="inline-actions">
+        <button id="saveSessionBtn" type="button">Lưu phiên</button>
+        <button id="logoutBtn" type="button" class="danger">Đăng xuất</button>
+      </div>
+      <hr />
+      <h3>Ngữ cảnh thao tác</h3>
+      <input id="ctxGroupId" placeholder="UUID nhóm mặc định" />
+      <input id="ctxLecturerId" placeholder="UUID giảng viên mặc định" />
+      <input id="ctxStudentId" placeholder="UUID sinh viên mặc định" />
+      <button id="applyContextBtn" type="button">Tự điền vào form</button>
+      <p class="hint">Lưu trong localStorage để demo nhanh.</p>
+    </aside>
+
+    <section class="content">
+      <% if (_roleKey === "ADMIN") { %>
+      <section class="card">
+        <h2>Quản trị viên - Quản lý tài khoản</h2>
+        <form id="createUserForm">
+          <input name="username" placeholder="username" required />
+          <input name="hoTen" placeholder="Họ tên" required />
+          <input name="email" placeholder="email" required />
+          <input name="maVaiTro" placeholder="SINH_VIEN / GIANG_VIEN / QUAN_TRI_VIEN" required />
+          <button type="submit">Tạo tài khoản</button>
+        </form>
+        <form id="updateRoleForm">
+          <input name="userId" placeholder="UUID người dùng" required />
+          <input name="role" placeholder="Vai trò" required />
+          <button type="submit">Cập nhật vai trò</button>
+        </form>
+        <form id="deleteUserForm">
+          <input name="userId" placeholder="UUID người dùng" required />
+          <button type="submit">Xóa tài khoản</button>
+        </form>
+      </section>
+      <% } %>
+
+      <% if (_roleKey === "ADMIN" || _roleKey === "GIANG_VIEN" || _roleKey === "TRUONG_NHOM") { %>
+      <section class="card">
+        <h2>Quản lý nhóm</h2>
+        <form id="createGroupForm">
+          <input name="tenNhom" placeholder="Tên nhóm" required />
+          <input name="deTai" placeholder="Đề tài" required />
+          <button type="submit">Tạo nhóm</button>
+        </form>
+        <form id="assignLecturerForm">
+          <input name="groupId" placeholder="UUID nhóm" required />
+          <input name="idGiangVien" placeholder="UUID giảng viên" required />
+          <button type="submit">Phân công giảng viên</button>
+        </form>
+        <form id="getGroupsForm">
+          <input name="idGiangVien" placeholder="UUID giảng viên" required />
+          <button type="submit">Xem nhóm theo giảng viên</button>
+        </form>
+        <form id="groupDetailForm">
+          <input name="groupId" placeholder="UUID nhóm" required />
+          <button type="submit">Chi tiết nhóm</button>
+        </form>
+        <form id="groupMembersForm">
+          <input name="groupId" placeholder="UUID nhóm" required />
+          <button type="submit">Thành viên nhóm</button>
+        </form>
+      </section>
+      <% } %>
+
+      <% if (_roleKey === "GIANG_VIEN" || _roleKey === "TRUONG_NHOM" || _roleKey === "THANH_VIEN") { %>
+      <section class="card">
+        <h2>Yêu cầu và nhiệm vụ</h2>
+        <form id="getRequirementsForm">
+          <input name="idNhom" placeholder="UUID nhóm" required />
+          <button type="submit">Xem yêu cầu</button>
+        </form>
+        <form id="getPersonalTasksForm">
+          <input name="idSinhVien" placeholder="UUID sinh viên" required />
+          <button type="submit">Xem nhiệm vụ cá nhân</button>
+        </form>
+        <form id="updateTaskStatusForm">
+          <input name="taskId" placeholder="Mã nhiệm vụ" required />
+          <input name="status" placeholder="TODO/IN_PROGRESS/DONE" required />
+          <button type="submit">Cập nhật trạng thái</button>
+        </form>
+      </section>
+      <% } %>
+
+      <% if (_roleKey === "ADMIN" || _roleKey === "TRUONG_NHOM") { %>
+      <section class="card">
+        <h2>Tích hợp và đồng bộ</h2>
+        <form id="configJiraForm">
+          <input name="idNhom" placeholder="UUID nhóm" required />
+          <input name="url" placeholder="Jira URL" required />
+          <input name="token" placeholder="Jira Token" required />
+          <button type="submit">Lưu cấu hình Jira</button>
+        </form>
+        <form id="configGithubForm">
+          <input name="idNhom" placeholder="UUID nhóm" required />
+          <input name="repo" placeholder="owner/repo" required />
+          <input name="token" placeholder="GitHub Token" required />
+          <input name="since" placeholder="2024-01-01T00:00:00Z" />
+          <button type="submit">Lưu cấu hình GitHub</button>
+        </form>
+        <form id="syncJiraForm">
+          <input name="idNhom" placeholder="UUID nhóm" required />
+          <button type="submit">Đồng bộ Jira</button>
+        </form>
+        <form id="syncGithubForm">
+          <input name="idNhom" placeholder="UUID nhóm" required />
+          <button type="submit">Đồng bộ GitHub</button>
+        </form>
+        <button id="mappingBtn" type="button">Liên kết task - commit</button>
+      </section>
+      <% } %>
+
+      <% if (_roleKey === "GIANG_VIEN" || _roleKey === "TRUONG_NHOM" || _roleKey === "THANH_VIEN") { %>
+      <section class="card">
+        <h2>Báo cáo</h2>
+        <form id="progressForm">
+          <input name="idNhom" placeholder="UUID nhóm" required />
+          <button type="submit">Tiến độ</button>
+        </form>
+        <form id="commitsForm">
+          <input name="idNhom" placeholder="UUID nhóm" required />
+          <button type="submit">Thống kê commit</button>
+        </form>
+        <form id="contributionsForm">
+          <input name="idNhom" placeholder="UUID nhóm" required />
+          <button type="submit">Đóng góp cá nhân</button>
+        </form>
+        <form id="exportForm">
+          <input name="idNhom" placeholder="UUID nhóm" required />
+          <button type="submit">Xuất CSV</button>
+        </form>
+      </section>
+      <% } %>
+
+      <section class="card">
+        <h2>Kết quả API</h2>
+        <div class="inline-actions">
+          <button id="viewJsonBtn" type="button">Xem JSON</button>
+          <button id="viewTableBtn" type="button">Xem Bảng</button>
+        </div>
+        <div id="tableOutput" class="table-output"></div>
+        <pre id="output">Sẵn sàng.</pre>
+      </section>
+    </section>
+  </main>
+
+  <script>
+    window.APP_ROLE = "<%= _roleKey %>";
+  </script>
+  <script src="/app.js"></script>
+</body>
+</html>
